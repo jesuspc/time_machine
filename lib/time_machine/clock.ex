@@ -13,9 +13,7 @@ defmodule TimeMachine.Clock do
   end
   def start_link(time: time, clock: clock) do
     clock = %TimeMachine.Clock{time: time, clock: clock}
-    map = Map.from_struct(clock)
-    # For some reason it is sending the struct as a keyword list
-    Agent.start_link(fn -> map end)
+    Agent.start_link(fn -> clock end)
   end
 
   @doc """
@@ -23,25 +21,25 @@ defmodule TimeMachine.Clock do
   """
   def get(clock) do
     case fetch(clock) do
-      {:ok, val}    -> struct(TimeMachine.Clock, val)
-      {:empty, val} -> Agent.stop(clock) && struct(TimeMachine.Clock, val)
+      {:ok, val}    -> val
+      {:empty, val} -> Agent.stop(clock) && val
     end
   end
 
   @doc """
   Puts the `time` and `clock` for the given `clock`.
   """
-  def put(clock, %{time: time, clock: clock}) do
-    Agent.update clock, fn(cstruct) ->
-      %{ cstruct | time: time, clock: clock }
+  def put(pid, time: time, clock: clock) do
+    Agent.update pid, fn(cstruct) ->
+      %TimeMachine.Clock{ cstruct | time: time, clock: clock }
     end
   end
 
   defp fetch(clock) do
     Agent.get_and_update clock, fn(cstruct) ->
       case cstruct.clock do
-        [last]   -> { {:empty, cstruct}, %{ cstruct | clock: [] } }
-        [_|tail] -> { {:ok, cstruct}, %{ cstruct | clock: tail } }
+        [last]   -> { {:empty, cstruct}, %TimeMachine.Clock{ cstruct | clock: [] } }
+        [_|tail] -> { {:ok, cstruct}, %TimeMachine.Clock{ cstruct | clock: tail } }
         _     -> { {:ok, cstruct}, cstruct }
       end
     end
