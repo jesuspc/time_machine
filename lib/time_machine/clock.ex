@@ -1,13 +1,17 @@
 defmodule TimeMachine.Clock do
   @default_clock "SYS (fakeable)"
+  @default_time :current
   use Timex
   defstruct id: :random.uniform(999999999),
-            time: nil,
+            time: @default_time,
             clock: @default_clock
 
   @doc """
   Starts a new clock.
   """
+  def start_link([])  do
+    start_link time: @default_time, clock: @default_clock
+  end
   def start_link(time: time)  do
     start_link time: time, clock: @default_clock
   end
@@ -40,12 +44,8 @@ defmodule TimeMachine.Clock do
       case cstruct.clock do
         [last]   -> { {:empty, cstruct}, %TimeMachine.Clock{ cstruct | clock: [] } }
         [_|tail] -> { {:ok, cstruct}, %TimeMachine.Clock{ cstruct | clock: tail } }
-        _     -> { {:ok, cstruct}, cstruct }
+        _        -> { {:ok, cstruct}, cstruct }
       end
     end
-  end
-
-  defp time_formatter do
-    &(DateFormat.format! &1, "{ISOz}")
   end
 end

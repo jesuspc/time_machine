@@ -6,8 +6,9 @@ defmodule TimeMachine.Registry do
   @doc """
   Starts the registry.
   """
-  def start_link(opts \\ []) do
-    GenServer.start_link(__MODULE__, :ok, opts)
+  def start_link(opts \\ [{:name, __MODULE__}]) do
+    {:ok, server} = GenServer.start_link(__MODULE__, :ok, opts)
+    {create(server, :default), server}
   end
 
   @doc """
@@ -22,8 +23,8 @@ defmodule TimeMachine.Registry do
   @doc """
   Ensures there is a clock associated to the given `iden` in `server`.
   """
-  def create(server, iden) do
-    GenServer.cast(server, {:create, iden})
+  def create(server, iden, initialization_args \\ []) do
+    GenServer.cast(server, {:create, iden, initialization_args})
   end
 
   ## Server Callbacks
@@ -36,12 +37,17 @@ defmodule TimeMachine.Registry do
     {:reply, HashDict.fetch(idens, iden), idens}
   end
 
-  def handle_cast({:create, iden}, idens) do
+  def handle_cast({:create, iden, initialization_args}, idens) do
     if HashDict.has_key?(idens, iden) do
       {:noreply, idens}
     else
-      {:ok, clock} = TimeMachine.Clock.start_link()
+      {:ok, clock} = TimeMachine.Clock.start_link(initialization_args)
       {:noreply, HashDict.put(idens, iden, clock)}
     end
   end
+
+  defp time_formatter do
+    &(DateFormat.format! &1, "{ISOz}")
+  end
+
 end
