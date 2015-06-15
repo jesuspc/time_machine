@@ -23,6 +23,9 @@ defmodule TimeMachine.Clock do
   @doc """
   Gets a value from the `clock` and reduces the counter automatically if needed.
   """
+  def get(:default) do
+    %TimeMachine.Clock{time: time_formatter.(Date.now)}
+  end
   def get(clock) do
     case fetch(clock) do
       {:ok, val}    -> val
@@ -47,5 +50,9 @@ defmodule TimeMachine.Clock do
         _        -> { {:ok, cstruct}, cstruct }
       end
     end
+  end
+
+  defp time_formatter do
+    &(DateFormat.format! &1, "{ISOz}")
   end
 end

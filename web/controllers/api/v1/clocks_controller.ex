@@ -16,11 +16,13 @@ defmodule TimeMachine.Api.V1.ClocksController do
   end
 
   defp get_clock(iden) do
-    {:ok, pid} = TimeMachine.Registry.lookup TimeMachine.Registry, iden
-    TimeMachine.Clock.get pid
+    case TimeMachine.Registry.lookup TimeMachine.Registry, iden do
+      :error     -> TimeMachine.Clock.get :default
+      {:ok, pid} -> TimeMachine.Clock.get pid
+    end
   end
 
   defp iden_from_params(params) do
-    params[:iden] || :default
+    params[:iden]
   end
 end
