@@ -1,5 +1,5 @@
 defmodule TimeMachine.Clock do
-  @default_clock "SYS (fakeable)"
+  @default_clock []
   @default_time :current
   use Timex
   defstruct id: :random.uniform(999999999),
@@ -9,22 +9,26 @@ defmodule TimeMachine.Clock do
   @doc """
   Starts a new clock.
   """
-  def start_link([])  do
-    start_link time: @default_time, clock: @default_clock
+  def start_link(state, args \\ [])
+  def start_link([], args)  do
+    start_link [time: @default_time, clock: @default_clock], args
   end
-  def start_link(time: time)  do
-    start_link time: time, clock: @default_clock
+  def start_link([time: time], args)  do
+    start_link [time: time, clock: @default_clock], args
   end
-  def start_link(time: time, clock: clock) do
+  def start_link([time: time, clock: clock], args) do
     clock = %TimeMachine.Clock{time: time, clock: clock}
-    Agent.start_link(fn -> clock end)
+    Agent.start_link(fn -> clock end, args)
   end
 
   @doc """
   Gets a value from the `clock` and reduces the counter automatically if needed.
   """
   def get(:default) do
-    %TimeMachine.Clock{time: time_formatter.(Date.now)}
+    case fetch(:default) do
+      {:ok, val}    -> val
+      {:empty, val} -> %TimeMachine.Clock{ val | time: time_formatter.(Date.now) }
+    end
   end
   def get(clock) do
     case fetch(clock) do
@@ -45,6 +49,7 @@ defmodule TimeMachine.Clock do
   defp fetch(clock) do
     Agent.get_and_update clock, fn(cstruct) ->
       case cstruct.clock do
+        []       -> { {:empty, cstruct}, cstruct }
         [last]   -> { {:empty, cstruct}, %TimeMachine.Clock{ cstruct | clock: [] } }
         [_|tail] -> { {:ok, cstruct}, %TimeMachine.Clock{ cstruct | clock: tail } }
         _        -> { {:ok, cstruct}, cstruct }

@@ -24,9 +24,9 @@ defmodule TimeMachine.Router do
 
     scope "/v1", V1, as: :v1 do
       get "/clock", ClocksController, :show
-      post "/clocks", ClocksController, :create
-      get "/clocks/:id", ClocksController, :show
-      post "/clocks/:id", ClocksController, :create
+      post "/clock", ClocksController, :create
+      get "/clocks/:iden", ClocksController, :show
+      post "/clocks/:iden", ClocksController, :create
     end
   end
 end

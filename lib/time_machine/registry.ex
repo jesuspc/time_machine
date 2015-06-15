@@ -37,6 +37,14 @@ defmodule TimeMachine.Registry do
     {:reply, HashDict.fetch(idens, iden), idens}
   end
 
+  def handle_cast({:create, :default, _}, idens) do
+    if HashDict.has_key?(idens, :default) do
+      {:noreply, idens}
+    else
+      {:ok, clock} = TimeMachine.Clock.start_link([], name: :default)
+      {:noreply, HashDict.put(idens, :default, clock)}
+    end
+  end
   def handle_cast({:create, iden, initialization_args}, idens) do
     if HashDict.has_key?(idens, iden) do
       {:noreply, idens}
