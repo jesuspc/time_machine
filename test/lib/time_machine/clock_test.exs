@@ -3,29 +3,29 @@ defmodule TimeMachine.ClockTest do
 
   test "start_link starts a link with the default clock when no clock given" do
     {:ok, pid} = TimeMachine.Clock.start_link(time: :time)
-    clock = TimeMachine.Clock.get(pid)
+    {:ok, clock} = TimeMachine.Clock.get(pid)
     assert clock.time === :time
     assert clock.clock === []
   end
 
   test "start_link starts a link with the given clock when clock given" do
     {:ok, pid} = TimeMachine.Clock.start_link(time: :time, clock: :clock)
-    clock = TimeMachine.Clock.get(pid)
+    {:ok, clock} = TimeMachine.Clock.get(pid)
     assert clock.time === :time
     assert clock.clock === :clock
   end
 
   test "get returns the clock without modifications if its clock is not a list" do
     {:ok, pid} = TimeMachine.Clock.start_link(time: :time_1, clock: :clock_1)
-    clock_1 = TimeMachine.Clock.get(pid)
-    clock_2 = TimeMachine.Clock.get(pid)
+    {:ok, clock_1} = TimeMachine.Clock.get(pid)
+    {:ok, clock_2} = TimeMachine.Clock.get(pid)
     assert clock_1 === clock_2
   end
 
   test "get returns the clock substracting one clock element if its clock is a list" do
     {:ok, pid} = TimeMachine.Clock.start_link(time: :time_1, clock: [1,2,3])
-    clock_1 = TimeMachine.Clock.get(pid)
-    clock_2 = TimeMachine.Clock.get(pid)
+    {:ok, clock_1} = TimeMachine.Clock.get(pid)
+    {:ok, clock_2} = TimeMachine.Clock.get(pid)
     assert clock_1 !== clock_2
     assert tl(clock_1.clock) === clock_2.clock
   end
@@ -51,7 +51,7 @@ defmodule TimeMachine.ClockTest do
   test "put updates the given clock with the given attributes" do
     {:ok, pid} = TimeMachine.Clock.start_link(time: :time_1, clock: :clock_1)
     TimeMachine.Clock.put(pid, time: :time_2, clock: :clock_2)
-    clock = TimeMachine.Clock.get(pid)
+    {:ok, clock}=TimeMachine.Clock.get(pid)
     assert clock.time === :time_2
     assert clock.clock === :clock_2
   end

@@ -1,6 +1,5 @@
 defmodule TimeMachine.Api.V1.ClocksController do
   use Phoenix.Controller
-
   plug :action
 
   def show(conn, params) do
@@ -15,13 +14,12 @@ defmodule TimeMachine.Api.V1.ClocksController do
     params |> iden_from_params |> get_clock
   end
 
-  defp get_clock(:default) do
-    TimeMachine.Clock.get :default
-  end
   defp get_clock(iden) do
     case TimeMachine.Registry.lookup TimeMachine.Registry, iden do
       :error     -> :error#TODO
-      {:ok, pid} -> TimeMachine.Clock.get pid
+      {:ok, pid} ->
+        {:ok, clock} = TimeMachine.Clock.get pid
+        clock
     end
   end
 

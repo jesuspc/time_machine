@@ -20,7 +20,9 @@ defmodule TimeMachine.ClocksControllerTest do
 
     assert conn.status == 200
     assert conn.resp_body == nil
-    assert TimeMachine.Clock.get(:default).time == time
-    assert TimeMachine.Clock.get(:default).time != time
+    {:ok, clock_1} = TimeMachine.Clock.get(:default)
+    {:ok, clock_2} = TimeMachine.Clock.get(:default)
+    assert clock_1.time == time
+    assert clock_2.time != time
   end
 end
