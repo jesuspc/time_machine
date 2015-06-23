@@ -3,7 +3,12 @@ defmodule TimeMachine.Api.V1.ClocksView do
   use Timex
 
   def render("show.json", %{clock: clock}) do
-    %TimeMachine.Clock{ clock | clock: format_clock_list(clock.clock), time: format_time(clock.time) }
+    formatted_clock = %{ Map.from_struct(clock) | clock: format_clock_list(clock.clock) }
+    Dict.put formatted_clock, :time, format_time(clock.clock)
+  end
+
+  def render("create.json", _) do
+    %{}
   end
 
   defp format_clock_list([]) do
@@ -13,8 +18,11 @@ defmodule TimeMachine.Api.V1.ClocksView do
     "FAKE #{clock_list}"
   end
 
-  defp format_time(nil) do
+  defp format_time([]) do
     format_time Date.now
+  end
+  defp format_time([hd, _]) do
+    DateFormat.format! hd, "{ISOz}"
   end
   defp format_time(time) do
     DateFormat.format! time, "{ISOz}"

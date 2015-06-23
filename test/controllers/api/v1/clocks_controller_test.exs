@@ -16,13 +16,12 @@ defmodule TimeMachine.ClocksControllerTest do
 
   test "POST /api/v1/clock with valid params" do
     time = "2015-06-15T18:42:02Z"
-    conn = post conn(), "/api/v1/clock", time: time, count: 1
+    conn = post conn(), "/api/v1/clock", time: time, count: "1"
 
     assert conn.status == 200
-    assert conn.resp_body == nil
+    assert conn.resp_body == "{}"
     {:ok, clock_1} = TimeMachine.Clock.get(:default)
     {:ok, clock_2} = TimeMachine.Clock.get(:default)
-    assert clock_1.time == time
-    assert clock_2.time != time
+    assert clock_1.clock != clock_2.clock
   end
 end

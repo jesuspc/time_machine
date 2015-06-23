@@ -53,9 +53,4 @@ defmodule TimeMachine.Registry do
       {:noreply, HashDict.put(idens, iden, clock)}
     end
   end
-
-  defp time_formatter do
-    &(DateFormat.format! &1, "{ISOz}")
-  end
-
 end

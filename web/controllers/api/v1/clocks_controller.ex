@@ -1,5 +1,6 @@
 defmodule TimeMachine.Api.V1.ClocksController do
   use Phoenix.Controller
+  use Timex
   plug :action
 
   def show(conn, params) do
@@ -7,7 +8,8 @@ defmodule TimeMachine.Api.V1.ClocksController do
   end
 
   def create(conn, params) do
-    conn |> put_status(200)
+    params |> iden_from_params |> put_clock(params["time"], String.to_integer(params["count"]))
+    conn |> put_status(200) |> render
   end
 
   defp clock(params) do
@@ -23,7 +25,19 @@ defmodule TimeMachine.Api.V1.ClocksController do
     end
   end
 
+  defp put_clock(iden, time, count) do
+    args = build_clock(time, count)
+    TimeMachine.Registry.create TimeMachine.Registry, iden, args
+  end
+
   defp iden_from_params(params) do
-    params[:iden] || :default
+    params["iden"] || :default
+  end
+
+  defp build_clock(time, count) do
+    Enum.map 1..count, fn(_) ->
+      {:ok, date_time} = time |> DateFormat.parse("{ISOz}")
+      date_time |> Date.convert(:secs)
+    end
   end
 end
