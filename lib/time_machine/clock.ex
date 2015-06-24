@@ -26,7 +26,7 @@ defmodule TimeMachine.Clock do
   @doc """
   Puts the `clock` for the given `clock`.
   """
-  def put(pid, clock: clock) do
+  def put(pid, clock) do
     Agent.update pid, fn(cstruct) ->
       %TimeMachine.Clock{ cstruct | clock: clock }
     end

@@ -15,13 +15,17 @@ defmodule TimeMachine.Api.V1.ClocksView do
     "SYS (fakeable)"
   end
   defp format_clock_list(clock_list) do
-    "FAKE #{clock_list}"
+    #TODO: print as string the clock list "FAKE #{clock_list}"
+    "FAKE"
   end
 
   defp format_time([]) do
     format_time Date.now
   end
-  defp format_time([hd, _]) do
+  defp format_time([hd|_]) when is_integer(hd) do
+    hd |> Date.from(:secs) |> format_time
+  end
+  defp format_time([hd|_]) do
     DateFormat.format! hd, "{ISOz}"
   end
   defp format_time(time) do

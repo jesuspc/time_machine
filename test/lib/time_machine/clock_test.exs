@@ -41,7 +41,7 @@ defmodule TimeMachine.ClockTest do
 
   test "put updates the given clock with the given attributes" do
     {:ok, pid} = TimeMachine.Clock.start_link(clock: :clock_1)
-    TimeMachine.Clock.put(pid, clock: :clock_2)
+    TimeMachine.Clock.put(pid, :clock_2)
     {:ok, clock}=TimeMachine.Clock.get(pid)
     assert clock.clock === :clock_2
   end
