@@ -16,15 +16,20 @@ defmodule TimeMachine.Api.V1.ClocksController do
     params |> iden_from_params |> get_clock
   end
 
-  defp get_clock(iden) do
+  defp get_clock(iden, recurring \\ false) do
     case TimeMachine.Registry.lookup TimeMachine.Registry, iden do
-      :error     -> :error#TODO
+      :error     -> 
+        if recurring, do: put_clock(iden)
+        get_clock(iden, true)
       {:ok, pid} ->
         {:ok, clock} = TimeMachine.Clock.get pid
         clock
     end
   end
 
+  defp put_clock(iden) do
+    TimeMachine.Registry.create TimeMachine.Registry, iden
+  end
   defp put_clock(iden, time, count) do
     args = build_clock(time, count)
     TimeMachine.Registry.create TimeMachine.Registry, iden, args
