@@ -15,8 +15,8 @@ defmodule TimeMachine.Api.V1.ClocksView do
     "SYS (fakeable)"
   end
   defp format_clock_list(clock_list) do
-    #TODO: print as string the clock list "FAKE #{clock_list}"
-    "FAKE"
+    as_string = Enum.join clock_list, ", "
+    "FAKE [#{as_string}]"
   end
 
   defp format_time([]) do
