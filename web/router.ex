@@ -6,6 +6,7 @@ defmodule TimeMachine.Router do
     plug :fetch_session
     plug :fetch_flash
     plug :protect_from_forgery
+    plug Plug.Static, at: "/swagger", from: Path.expand("../priv/swagger", __DIR__)
   end
 
   pipeline :api do
