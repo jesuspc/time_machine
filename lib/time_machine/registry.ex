@@ -7,8 +7,10 @@ defmodule TimeMachine.Registry do
   Starts the registry.
   """
   def start_link(opts \\ [{:name, __MODULE__}]) do
-    {:ok, server} = GenServer.start_link(__MODULE__, :ok, opts)
-    {create(server, :default), server}
+    case GenServer.start_link(__MODULE__, :ok, opts) do
+      {:ok, server} -> {create(server, :default), server}
+      any -> any
+    end
   end
 
   @doc """
@@ -53,5 +55,8 @@ defmodule TimeMachine.Registry do
       {:ok, clock} = TimeMachine.Clock.start_link(initialization_args)
       {:noreply, HashDict.put(idens, iden, clock)}
     end
+  end
+  def handle_cast(:stop, state) do
+    {:noreply, state}
   end
 end

@@ -1,0 +1,175 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Time Machine API",
+        "description": "Time Machine microservice",
+        "version": "1.0.0"
+    },
+    "host": "microservices.qa.workshare.com:9295",
+    "schemes": [
+        "http"
+    ],
+    "basePath": "/v1",
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/clock.json": {
+            "get": {
+                "summary": "Default Clock",
+                "description": "Returns the default clock state\n",
+                "tags": [
+                    "Default Clock",
+                    "Clock"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The default clock state",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/Clock"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Set Default Clock",
+                "description": "Sets a fixed mocked time into the default clock that will be returned during a certain amount of requests.\n",
+                "parameters": [
+                    {
+                        "name": "time",
+                        "in": "query",
+                        "description": "Value for the faked time in ISO8601-UTC format",
+                        "required": true,
+                        "type": "string",
+                        "format": "ISO8601-UTC"
+                    },
+                    {
+                        "name": "count",
+                        "in": "query",
+                        "description": "Number of requests that should be responded with the faked time",
+                        "required": true,
+                        "type": "number",
+                        "format": "integer"
+                    }
+                ],
+                "tags": [
+                    "Default Clock",
+                    "Clock"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/clocks/{iden}.json": {
+            "get": {
+                "summary": "Any Clock",
+                "description": "Returns the clock state for the given iden\n",
+                "parameters": [
+                    {
+                        "name": "iden",
+                        "in": "path",
+                        "description": "The identifier of the clock",
+                        "required": true,
+                        "type": "string",
+                        "format": "any"
+                    }
+                ],
+                "tags": [
+                    "Clock"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The state of the clock",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/Clock"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Set any Clock",
+                "description": "Sets a fixed mocked time into the clock for the given iden that will be returned during a certain amount of requests.\n",
+                "parameters": [
+                    {
+                        "name": "iden",
+                        "in": "path",
+                        "description": "The identifier of the clock",
+                        "required": true,
+                        "type": "string",
+                        "format": "any"
+                    },
+                    {
+                        "name": "time",
+                        "in": "query",
+                        "description": "Value for the faked time in ISO8601-UTC format",
+                        "required": true,
+                        "type": "string",
+                        "format": "ISO8601-UTC"
+                    },
+                    {
+                        "name": "count",
+                        "in": "query",
+                        "description": "Number of requests that should be responded with the faked time",
+                        "required": true,
+                        "type": "number",
+                        "format": "integer"
+                    }
+                ],
+                "tags": [
+                    "Clock"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Clock": {
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "description": "Internal Id of the clock"
+                },
+                "time": {
+                    "type": "string",
+                    "description": "The time expressed in ISO8601-UTC format (defaults to system time)"
+                },
+                "clock": {
+                    "type": "string",
+                    "description": "The type of clock that's currently configured"
+                }
+            }
+        },
+        "Error": {
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
