@@ -1,0 +1,4 @@
+Error handling to match current error handling
+Version endpoint
+Healthcheck endpoint
+In production you should not be able to fake the code => config file
